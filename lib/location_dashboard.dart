@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_api_flutter_test/shared/constants.dart';
 import 'package:location/location.dart' as loc;
@@ -25,34 +26,51 @@ class _LocationDashboardState extends State<LocationDashboard> {
   void initState() {
     super.initState();
     _requestPermission();
-    location.changeSettings(interval: 300, accuracy: loc.LocationAccuracy.high);
+    location.changeSettings(interval: 500, accuracy: loc.LocationAccuracy.balanced);
     location.enableBackgroundMode(enable: true);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Get the current user
+    final User? user = FirebaseAuth.instance.currentUser;
+    final String displayName = user?.displayName ?? 'Guest';
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text('Live Location Tracker'),
+        backgroundColor: Colors.black,
+        title: Text('Signed in as $displayName'),
       ),
       body: Column(
         children: [
-          TextButton(
-              onPressed: () {
-                _getLocation();
-              },
-              child: const Text('Add my location')),
-          TextButton(
-              onPressed: () {
-                _listenLocation();
-              },
-              child: const Text('Enable live location')),
-          TextButton(
-              onPressed: () {
-                _stopListening();
-              },
-              child: const Text('Stop live location')),
+          SizedBox(
+            width: 200,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                onPressed: () {
+                  _getLocation();
+                },
+                child: const Text('Add my location')),
+          ),
+          SizedBox(
+            width: 200,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                onPressed: () {
+                  _listenLocation();
+                },
+                child: const Text('Enable live location')),
+          ),
+          SizedBox(
+            width: 200,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                onPressed: () {
+                  _stopListening();
+                },
+                child: const Text('Stop live location')),
+          ),
           Expanded(
             child: StreamBuilder(
               stream: FirebaseFirestore.instance.collection('location').snapshots(),

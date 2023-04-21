@@ -8,6 +8,26 @@ import '../models/user_model.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Sign in with Google
+//   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
   // Create user object based on FirebaseUser
   UserModel? _userFromFirebaseUser(User? user) {
     return user != null ? UserModel(uid: user.uid) : null;
@@ -48,17 +68,6 @@ class AuthService {
       return _userFromFirebaseUser(user);
     } catch (e) {
       return null;
-    }
-  }
-
-  // Sign in with Google
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  Future<void> signInWithGoogle() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
     }
   }
 
