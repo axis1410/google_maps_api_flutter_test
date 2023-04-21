@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/user_model.dart';
 
@@ -40,11 +43,22 @@ class AuthService {
       User user = result.user!;
 
       // Create a new document for the user with the uid
-      await DatabaseService(uid: user.uid).updateUserData('0', 'New Crew Member', 100);
+      // await DatabaseService(uid: user.uid).updateUserData('0', 'New Crew Member', 100);
 
       return _userFromFirebaseUser(user);
     } catch (e) {
       return null;
+    }
+  }
+
+  // Sign in with Google
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  Future<void> signInWithGoogle() async {
+    try {
+      await _googleSignIn.signIn();
+    } catch (error) {
+      print(error);
     }
   }
 
@@ -55,5 +69,9 @@ class AuthService {
     } catch (e) {
       return null;
     }
+  }
+
+  signInAnon() {
+    print("Signing in anonymously has not been implemented yet");
   }
 }
